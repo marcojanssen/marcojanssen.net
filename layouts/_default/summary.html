@@ -1,0 +1,6 @@
+<div class="blog-post">
+    <h2>{{ .Title }}</h2>
+    <p class="blog-post-meta">{{ .Date.Format "2 January, 2006" }}</p>
+    <p>{{ .Summary }}</p>
+    <a class="btn btn-primary" href="{{ .Permalink }}" role="button">Read more</a>
+</div>
