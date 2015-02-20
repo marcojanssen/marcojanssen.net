@@ -4,6 +4,7 @@ draft: true
 title: ""
 slug: ""
 description: ""
+keyword: "hello, world"
 image: ""
 tags: [""]
 categories: ["blog"]
