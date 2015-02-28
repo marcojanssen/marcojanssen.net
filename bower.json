@@ -4,6 +4,8 @@
   "authors": [
     "Marco Janssen <dev@marcojanssen.net>"
   ],
+  "dependencies": {
+  },
   "license": "MIT",
   "homepage": "http://marcojanssen.net",
   "private": true,
@@ -13,9 +15,5 @@
     "bower_components",
     "test",
     "tests"
-  ],
-  "dependencies": {
-    "highlightjs": "~8.4.0",
-    "bootstrap": "~3.3.1"
-  }
+  ]
 }

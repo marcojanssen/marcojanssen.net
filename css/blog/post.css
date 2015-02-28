@@ -1,0 +1,23 @@
+.blog-post-header {
+    background-color: #222222;
+    padding: 50px 0px 50px 0px;
+    margin-bottom: 20px;
+}
+
+.blog-post-header h1 {
+    color: #ffffff;
+    padding-left: 15px;
+}
+
+.blog-post-tags {
+    margin-bottom: 20px;
+}
+
+.blog-post-tags span {
+    margin-right: 5px;
+}
+
+.blog-post-content p,
+.blog-post-content h2 {
+    padding-bottom: 10px;
+}
