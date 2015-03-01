@@ -8,26 +8,25 @@ module.exports = function (grunt) {
         // Task configuration
         bower_concat: {
             all: {
-                dest: 'build/js/bower.js',
-                cssDest: 'build/css/bower.css',
+                dest: 'build/js/_bower.js',
+                cssDest: 'build/css/_bower.css',
                 bowerOptions: {
                     relative: false
-                }
+                },
+                exclude: [
+                    'jquery',
+                    'bootstrap'
+                ]
             }
         },
         concat: {
             options: {
                 stripBanners: false
             },
-            js: {
-                src: [
-                    'lib/js/main.js'
-                ],
-                dest: 'build/js/concat.js'
-            },
             css: {
                 src: [
-                    'lib/css/main.css'
+                    'css/*.css',
+                    'css/**/*.css'
                 ],
                 dest: 'build/css/concat.css'
             }
@@ -38,8 +37,7 @@ module.exports = function (grunt) {
             },
             concat: {
                 src: [
-                    '<%= bower_concat.all.dest %>',
-                    '<%= concat.js.dest %>'
+                    '<%= bower_concat.all.dest %>'
                 ],
                 dest: 'static/js/minified.js'
             }
@@ -88,8 +86,8 @@ module.exports = function (grunt) {
             },
             minify: {
                 files: [
-                    'lib/**/*.js',
-                    'lib/**/*.css'
+                    'css/*.css',
+                    'css/**/*.css'
                 ],
                 tasks: ['default']
             }

@@ -10,3 +10,4 @@ indexes:
 params:
   image: "empire.png"
   description: "Software Engineer"
+  keywords: "marco janssen, software engineer, php"
