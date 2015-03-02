@@ -11,14 +11,93 @@ tags = ["deployment"]
 title = "Deploying a static website with Codeship"
 +++
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin lorem urna, viverra a tincidunt consectetur, consectetur eu neque. Duis suscipit aliquet sapien nec mattis. Vivamus non bibendum est. Integer egestas ultrices lectus vel iaculis. Aliquam nibh metus, egestas id fringilla nec, iaculis ut ex. Aliquam dictum vitae nisi vel posuere. Sed lorem tortor, blandit nec fermentum nec, vulputate id nibh. Pellentesque erat neque, fermentum at accumsan vitae, facilisis id quam. Sed tempus consequat semper. Etiam eros tortor, laoreet sit amet pretium et, finibus vel dui. Nullam faucibus varius dolor ac tempor. Nullam massa turpis, consectetur aliquam ipsum sed, imperdiet volutpat ligula. Integer mattis vitae metus eget mattis. Mauris in placerat felis. Phasellus blandit, risus eget finibus tempus, sem urna elementum dui, in rhoncus justo ipsum et diam. Pellentesque sagittis, felis ac dictum vulputate, turpis felis ultricies lectus, ac ultrices nisl sapien in urna.
+## Setting up your project
 
-Vivamus finibus sem lacus, ut porta turpis posuere vel. Maecenas lacinia eget elit placerat vestibulum. Etiam volutpat, elit eget pharetra ornare, ipsum neque interdum erat, imperdiet luctus dui ipsum non ante. Nullam sed molestie sem, a scelerisque ligula. Sed ac mi lectus. Proin mauris nisi, pretium eget bibendum in, vestibulum sed nunc. In in turpis vel nisi posuere iaculis in et sem. Quisque dictum velit ac blandit dictum. Aliquam consequat accumsan tempor. Curabitur scelerisque lorem arcu, vitae iaculis est faucibus a. Fusce mauris nisl, molestie sit amet hendrerit quis, tempor sed massa.
+Create a new project in Codeship and select your repository from either Github or Bitbucket. After selecting a repository 
+we can set our setup and test commands. 
 
-Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec fermentum molestie erat. Fusce in vehicula purus. Maecenas a varius massa. Duis nulla est, ullamcorper quis pretium vitae, vestibulum id felis. Sed vulputate velit ac turpis suscipit, a lobortis ligula tincidunt. Aenean lacinia, urna id bibendum dapibus, dui tellus volutpat sapien, eget imperdiet massa elit ut erat. Nullam varius euismod nibh et consectetur. Proin ex metus, blandit et lorem et, sodales lobortis felis. Nulla rhoncus nisi in congue luctus. Vivamus sed consequat odio. Suspendisse ac auctor urna. Mauris eu ligula pulvinar, porttitor neque quis, pulvinar tellus. Donec ut elementum erat, ut iaculis eros.
+### Test before deploying
 
-Praesent commodo placerat lacus, non consectetur magna tempor eget. Nullam quis massa et purus maximus sollicitudin et vitae tortor. Praesent ac cursus felis, ut interdum erat. Donec mi mauris, tincidunt nec justo ut, porttitor imperdiet lectus. Duis eget iaculis enim, eu feugiat mauris. Proin ante sem, pellentesque ultricies nisi sit amet, suscipit iaculis felis. Nullam porta finibus diam id sollicitudin. Donec id velit dictum enim mollis dignissim. Sed luctus congue sem, quis cursus ante venenatis in. In vitae pulvinar erat. Etiam ut nisl eget dolor commodo tincidunt eget ut mi.
+If we safely want to deploy our website we first need to check if our website is actually working by testing it. Testing a static website
+can be done by building it on demand. If something breaks the test will fail and the deployment will not be executed. 
+Depending on the generator you use you could setup and test it as follows.
 
-Etiam non ipsum nulla. In feugiat justo vel quam feugiat interdum sed vitae erat. Proin in pharetra eros, non maximus nibh. Sed mattis massa a ante fermentum, quis sodales leo volutpat. Mauris pretium consequat sem non porttitor. Mauris vel metus eu augue bibendum hendrerit ut sed nisi. Maecenas tincidunt ante eget ante iaculis elementum. Suspendisse dignissim velit a leo interdum, sed sollicitudin tortor sollicitudin.
+---------------------------
+
+#### Hugo
+
+##### Setup
+
+~~~ bash
+wget -O ~/hugo.tar.gz https://github.com/spf13/hugo/releases/download/v0.13/hugo_0.13_linux_amd64.tar.gz
+tar -C ~/ -zxvf ~/hugo.tar.gz
+cp ~/hugo_0.13_linux_amd64/hugo_0.13_linux_amd64 ~/bin/hugo
+chmod +x ~/bin/hugo
+~~~
+
+##### Test
+
+~~~ bash
+hugo -b http://yourwebsite.com
+~~~
+
+---------------------------
+
+#### Jekyll
+
+##### Setup
+
+~~~ bash
+gem install jekyll
+~~~
+
+##### Test
+
+~~~ bash
+jekyll build
+~~~
+
+---------------------------
+
+#### Sculpin
+
+##### Setup
+
+~~~ bash
+wget -O ~/sculpin.phar https://download.sculpin.io/sculpin.phar
+cp ~/sculpin.phar ~/bin/sculpin
+chmod +x ~/bin/sculpin
+~~~
+
+##### Test
+
+~~~ bash
+sculpin generate --env=prod
+~~~
+
+---------------------------
+
+### Deploying
+
+After we made sure the build succeeded we want to automatically deploy our latest build to our webserver. Codeship generates
+a ssh key for each project and displays the public key in the general settings. Make sure you add this public key to  
+the user you want to use for deployment. In general i always create a `deploy` user which has the appropriate rights to execute the 
+needed steps for our deployment. Codeship only deploys to the branches which are setup, by default this is the master branch.
+Any other branch will only be tested and regardless of the outcome will never be deployed unless specified.
+ 
+#### Rsync
+
+One of the easiest and simplest forms of deployment is using rsync. This will simply sync the files to your webserver in the specified directory.
+Since we don't really have any form of caching needs or dependencies we need to install this will just do fine for the time being.
+
+To use a rsync approach we need to select custom script at the deployment section and use the following setup:
+
+~~~ bash
+ssh -t deploy@127.0.0.1 mkdir -p /var/www/yourwebsite.com/releases/$CI_COMMIT_ID
+rsync -avz -e "ssh" --rsync-path="rsync" ~/clone/public/ deploy@127.0.0.1:/var/www/yourwebsite.com/releases/$CI_COMMIT_ID
+ssh -t deploy@127.0.0.1 rm -f /var/www/yourwebsite.com/releases/current
+ssh -t deploy@127.0.0.1 ln -s /var/www/yourwebsite.com/releases/$CI_COMMIT_ID /var/www/yourwebsite.com/releases/current
+ssh -t deploy@127.0.0.1 service nginx restart
+~~~
 
 
