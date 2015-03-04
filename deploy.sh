@@ -9,7 +9,7 @@ hugo --baseUrl=http://marcojanssen.net --destination=deploy
 cd deploy
 
 git add --all
-git commit -m "$1"
+git commit -m "$1 --skip-ci"
 git push origin gh-pages
 
 cd ../
