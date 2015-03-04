@@ -1,0 +1,19 @@
+{
+  "name": "marcojanssen.net",
+  "version": "1.0.0",
+  "authors": [
+    "Marco Janssen <dev@marcojanssen.net>"
+  ],
+  "dependencies": {
+  },
+  "license": "MIT",
+  "homepage": "http://marcojanssen.net",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
