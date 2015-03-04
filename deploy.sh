@@ -1,4 +1,5 @@
 #!/bin/bash
+
 rm -rf public/
 
 git clone git@github.com:marcojanssen/marcojanssen.github.io.git public
