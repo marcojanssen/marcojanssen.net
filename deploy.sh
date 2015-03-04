@@ -1,7 +1,9 @@
 #!/bin/bash
+rm -rf public/
 
-git submodule init
-git submodule update --checkout
+git clone git@github.com:marcojanssen/marcojanssen.github.io.git public
+
+hugo -b http://marcojanssen.net
 
 cd public
 
