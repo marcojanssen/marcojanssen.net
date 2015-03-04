@@ -1,7 +1,0 @@
-.idea
-bower_components
-build
-node_modules
-static/css/minified.css
-static/js/minified.js
-public/
